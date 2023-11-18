@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="styles.css"/>
+        <script src="script.js"></script>
+    </head>
+    <header>
+        <h1>Exotic Fruits</h1>
+        <h2>Add Exotic Fruit</h2>
+        <a href="#" id="add">+</a>
+    </header>
+
+    <div class="columns column">
+        <div id="fruits-list"></div>
+        <div id="fruits-column">
+            <div id="fruits-info"></div>
+        </div>
+    </div>
+    
+    <div id="edit-fruit-container" class="dialog transparent">
+        <span class="close">&times;</span>
+
+        <h3 id="title">Exotic Fruits</h3>
+        <form id="edit-fruit" method="post">
+            <input type="hidden" name="_id" value="-1">
+            <p> 
+                <label for="name">Exotic Fruit Name: </label>
+                <input type="text" id="name" name="name"required />
+            </p>
+            <p>
+                <label for="color">Color: </label>
+                <input type="text" id="color" name="color" required>
+            </p>
+            <p>
+                <label for="family">Family: </label>
+                <input type="text" id="family" name="family" required>
+            </p>
+            <p id="place-p">
+                    <label class="inline">Place:</label>
+                    <a href="#" id="add-place">Add Place</a>
+                    <section id="place-boxes"></section>
+            </p>
+            <p>
+                <label for="growth">Growth: </label>
+                <input type="text" id="growth" name="growth" required>
+            </p>
+            <p>
+                <label for="img">Upload Image: </label>
+                <input type="file" id="img" name="img">
+            </p>
+            <p>
+                <button id="add" type="submit">Add Exotic Fruit</button>
+            </p>
+        </form>
+
+        <section id="success-message" class="hidden">
+            <p>Your exotic fruit has been added!</p>
+        </section>
+       
+    </div>
+</html>
