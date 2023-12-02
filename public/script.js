@@ -24,111 +24,106 @@ const showFruits = async() => {
         a.append(h3);
 
         const img = document.createElement("img");
-        img.src = fruit.image;
+        img.src = fruit.img;
         section.append(img);
 
         a.onclick = (e) => {
             e.preventDefault();
-            displayFruits(fruit);
+            displayDetails(fruit);
         };
     });
 };
 
-const displayFruits = (fruit) => {
-    const fruitsInfo = document.getElementById("fruits-info");
-    fruitsInfo.innerHTML = "";
+const displayDetails = (fruit) => {
+    const fruitDetails = document.getElementById("fruit-details");
+    fruitDetails.innerHTML = "";
 
     const dLink = document.createElement("a");
-    dLink.innerHTML = "	&#x2715;";
-    fruitsInfo.append(dLink);
+    dLink.innerHTML = "	 &#x2715;";
+    fruitDetails.append(dLink);
     dLink.id = "delete-link";
 
     const eLink = document.createElement("a");
     eLink.innerHTML = "&#9998;";
-    fruitsInfo.append(eLink);
+    fruitDetails.append(eLink);
     eLink.id = "edit-link";
 
-    const name = document.createElement("h3");
-    name.innerHTML = `<strong>Name: </strong> ${fruit.name}`;
-    fruitsInfo.append(name);
+    const h3 = document.createElement("h3");
+    h3.innerHTML = `<strong>Name: </strong> ${fruit.name}`;
+    fruitDetails.append(h3);
 
     const color = document.createElement("p");
     color.innerHTML = `<strong>Color: </strong> ${fruit.color}`;
-    fruitsInfo.append(color);
+    fruitDetails.append(color);
 
     const family = document.createElement("p");
     family.innerHTML = `<strong>Family: </strong> ${fruit.family}`;
-    fruitsInfo.append(family);
+    fruitDetails.append(family);
 
     const place = document.createElement("p");
     place.innerHTML = `<strong>Place: </strong> ${fruit.place}`;
-    fruitsInfo.append(place);
+    fruitDetails.append(place);
 
     const growth = document.createElement("p");
     growth.innerHTML = `<strong>Growth: </strong> ${fruit.growth}`;
-    fruitsInfo.append(growth);
-
-    const image = document.createElement("img");
-    image.src = fruit.image;
-    fruitsInfo.append(image);
+    fruitDetails.append(growth);
 
     const ul = document.createElement("ul");
-    fruitsInfo.appendChild(ul); 
+    fruitDetails.append(ul); 
     console.log(fruit.place);
-    fruit.places.forEach((place) => { 
+    fruit.place.forEach((place) => { 
         const li = document.createElement("li");
-        ul.appendChild(li);
+        ul.append(li);
         li.innerHTML = place;
     });
+
+    eLink.onclick = (e) => {
+        e.preventDefault();
+        document.querySelector(".dialog").classList.remove("transparent");
+        document.getElementById("title").innerHTML = "Edit Exotic Fruit";
+    };
 
     dLink.onclick = (e) => {
         e.preventDefault();
         deleteFruit(fruit);
     };
 
-    eLink.onclick = (e) => {
-        e.preventDefault();
-        document.querySelector(".dialog").classList.remove("transparent");
-        document.getElementById("title").innerHTML = "Edit Exotic Fruit Info";
-        populateEditForm(fruit); 
-    };
-
-   
+    populateEditForm(fruit); 
 };
 
-const deleteFruit = async(fruit) => {
-    let response = await fetch(`/api/fruits/${fruit._id}`, {
+const deleteFruit = async (fruit) => {
+    let response = await fetch(`/api/fruits/${fruit._id}`, { 
         method: "DELETE",
         headers: {
-            "Content-Type": "application/json;charset=utf-8"
-        }
-    });
+        "Content-Type": "application/json;charset=utf-8",
+        },
+  });
 
     if (response.status != 200) {
-        console.log("Deleting");
+        console.log("error deleting");
         return;
     }
 
     let result = await response.json();
     showFruits();
-    document.getElementById("fruits-info").innerHTML = "";
+    document.getElementById("fruit-details").innerHTML = "";
     resetForm();
 }
 
 const populateEditForm = (fruit) => {
-    const form = document.getElementById("edit-fruit");
+    const form = document.getElementById("add-edit-fruit-form");
     form._id.value = fruit._id;
     form.name.value = fruit.name;
     form.color.value = fruit.color;
     form.family.value = fruit.family;
-    populatePlaces(fruit.place);
+    populatePlace(fruit);
     form.growth.value = fruit.growth;
-    form.image.value = fruit.image;
+    
 };
 
-const populatePlaces = (fruit) => {
+const populatePlace = (fruit) => {
     const section = document.getElementById("place-boxes");
-    fruit.forEach((place) => {
+    fruit.places.forEach((place) => {
         const input = document.createElement("input");
         input.type = "text";
         input.value = place;
@@ -136,12 +131,12 @@ const populatePlaces = (fruit) => {
     });
 };
 
-const addExoticFruit = async(e) => {
+const addEditFruit = async(e) => {
     e.preventDefault();
-    const form =  document.getElementById("edit-fruit");
+    const form =  document.getElementById("add-edit-fruit-form");
     const formData = new FormData(form);
    
-    let response;
+    let fruit;
     formData.append("place", getExoticFruits());
     if(form._id.value == -1){
         formData.delete("_id");
@@ -150,7 +145,7 @@ const addExoticFruit = async(e) => {
 
         response = await fetch("/api/fruits", {
             method: "POST",
-            body: formData
+            body: formData,
         });
 
     }
@@ -161,19 +156,18 @@ const addExoticFruit = async(e) => {
 
         response = await fetch(`/api/fruits/${form._id.value}`, {
             method: "PUT",
-            body: formData
+            body: formData,
         });
     }
 
     if(response.status != 200){
         console.log("Posting Error");
-        return;
     }
 
     fruit = await response.json();
 
     if (form._id.value != -1) {
-        displayFruits(fruit);
+        displayDetails(fruit);
     }
     
     resetForm();
@@ -201,7 +195,7 @@ const addPlace = (e) => {
 }
 
 const resetForm = () => {
-    const form = document.getElementById("edit-fruit");
+    const form = document.getElementById("add-edit-fruit-form");
     form.reset();
     form._id.value = "-1";
     document.getElementById("place-boxes").innerHTML="";
@@ -220,9 +214,8 @@ const showHideAdd = (e) => {
 
 window.onload = () => {
     showFruits();
-    document.getElementById("edit-fruit").onsubmit = addExoticFruit;
-    document.getElementById("add").onclick = populateEditForm;
-    document.getElementById("add").onclick = showHideAdd;
+    document.getElementById("add-edit-fruit-form").onsubmit = addEditFruit;
+    document.getElementById("add-link").onclick = showHideAdd;
 
     document.querySelector(".close").onclick = () => {
         document.querySelector(".dialog").classList.add("transparent");
